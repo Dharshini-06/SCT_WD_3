@@ -1,0 +1,82 @@
+let score = 0;
+let currentQuestion = 0;
+let submitted = false;
+const answers = {};
+
+const questions = [
+    { question: 'What is the capital of France?', type: 'single', options: ['Paris', 'London', 'Berlin', 'Madrid'], answer: ['Paris'] },
+    { question: 'Select the prime numbers:', type: 'multi', options: ['2', '3', '4', '5', '6'], answer: ['2', '3', '5'] },
+    { question: 'What is 5 + 7?', type: 'fill', options: [], answer: ['12'] },
+    { question: 'Which planet is known as the Red Planet?', type: 'single', options: ['Mars', 'Jupiter', 'Saturn', 'Venus'], answer: ['Mars'] },
+    { question: 'Which languages are used for web development?', type: 'multi', options: ['HTML', 'Python', 'CSS', 'JavaScript'], answer: ['HTML', 'CSS', 'JavaScript'] },
+    { question: 'Who wrote "To Kill a Mockingbird"?', type: 'single', options: ['Harper Lee', 'J.K. Rowling', 'Jane Austen', 'Mark Twain'], answer: ['Harper Lee'] },
+    { question: 'Complete the phrase: "An apple a day keeps the ______ away."', type: 'fill', options: [], answer: ['doctor'] },
+    { question: 'Which ocean is the largest?', type: 'single', options: ['Atlantic', 'Indian', 'Arctic', 'Pacific'], answer: ['Pacific'] },
+    { question: 'Pick the even numbers:', type: 'multi', options: ['1', '2', '3', '4', '5'], answer: ['2', '4'] },
+    { question: 'What is the boiling point of water (in Celsius)?', type: 'fill', options: [], answer: ['100'] }
+];
+
+function loadQuestion() {
+    const q = questions[currentQuestion];
+    document.getElementById("question").innerText = q.question;
+    const optionsDiv = document.getElementById("options");
+    optionsDiv.innerHTML = "";
+    document.getElementById("fillAnswer").style.display = "none";
+    document.getElementById("submitBtn").style.display = currentQuestion === questions.length - 1 ? "block" : "none";
+
+    if (q.type === "single" || q.type === "multi") {
+        q.options.forEach((option) => {
+            const checkbox = document.createElement("input");
+            checkbox.type = q.type === "single" ? "radio" : "checkbox";
+            checkbox.name = "option";
+            checkbox.value = option;
+            if (answers[currentQuestion] && answers[currentQuestion].includes(option)) {
+                checkbox.checked = true;
+            }
+            const label = document.createElement("label");
+            label.innerText = option;
+            label.prepend(checkbox);
+            optionsDiv.appendChild(label);
+        });
+    } else if (q.type === "fill") {
+        document.getElementById("fillAnswer").style.display = "block";
+        document.getElementById("fillAnswer").value = answers[currentQuestion] || "";
+    }
+}
+
+function nextQuestion() {
+    collectAnswer();
+    if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        loadQuestion();
+    }
+}
+
+function prevQuestion() {
+    collectAnswer();
+    if (currentQuestion > 0) {
+        currentQuestion--;
+        loadQuestion();
+    }
+}
+
+function collectAnswer() {
+    const q = questions[currentQuestion];
+    if (q.type === "fill") {
+        answers[currentQuestion] = document.getElementById("fillAnswer").value;
+    } else {
+        const checked = Array.from(document.querySelectorAll("input[name='option']:checked"));
+        answers[currentQuestion] = checked.map(opt => opt.value);
+    }
+}
+
+function submitQuiz() {
+    submitted = true;
+    document.getElementById("finalMessage").innerText = "Quiz Completed! Your final score: " + score + "/" + questions.length;
+    document.getElementById("submitBtn").innerText = "Submitted";
+    document.getElementById("submitBtn").disabled = true;
+    document.getElementById("prevBtn").disabled = true;
+    document.getElementById("nextBtn").disabled = true;
+}
+
+loadQuestion();
