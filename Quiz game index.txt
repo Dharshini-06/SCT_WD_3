@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>Interactive Quiz Game</h2>
+        <p id="score">Score: 0</p>
+        <p id="question"></p>
+        <div id="options"></div>
+        <input type="text" id="fillAnswer" placeholder="Your answer..." style="display: none;">
+        <button id="prevBtn" onclick="prevQuestion()">&#8592; Previous</button>
+        <button id="nextBtn" onclick="nextQuestion()">Next &#8594;</button>
+        <button id="submitBtn" onclick="submitQuiz()" style="display: none;">Submit</button>
+        <p id="finalMessage"></p>
+        <p id="result"></p>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
