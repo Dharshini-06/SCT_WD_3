@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f6d365, #fda085);
+            text-align: center;
+            padding: 50px;
+        }
+        .quiz-container {
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            max-width: 600px;
+            margin: auto;
+            color: #333;
+        }
+        button {
+            padding: 15px 30px;
+            margin: 20px;
+            border: none;
+            background-color: #ff6f61;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        button:hover {
+            background-color: #ff3b2f;
+        }
+        button:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+        label {
+            display: block;
+            margin: 12px 0;
+            font-size: 20px;
+            background-color: #eee;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        input[type="radio"], input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            font-size: 18px;
+        }
+        #finalMessage {
+            font-size: 24px;
+            margin-top: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>Interactive Quiz Game</h2>
+        <p id="score">Score: 0</p>
+        <p id="question"></p>
+        <div id="options"></div>
+        <input type="text" id="fillAnswer" placeholder="Your answer..." style="display: none;">
+        <button id="prevBtn" onclick="prevQuestion()">&#8592; Previous</button>
+        <button id="nextBtn" onclick="nextQuestion()">Next &#8594;</button>
+        <button id="submitBtn" onclick="submitQuiz()" style="display: none;">Submit</button>
+        <p id="finalMessage"></p>
+        <p id="result"></p>
+    </div>
+    <script>
+        let score = 0;
+        let currentQuestion = 0;
+        let submitted = false;
+        const answers = {};
+
+        const questions = [
+    { question: 'What is the capital of France?', type: 'single', options: ['Paris', 'London', 'Berlin', 'Madrid'], answer: ['Paris'] },
+    { question: 'Select the prime numbers:', type: 'multi', options: ['2', '3', '4', '5', '6'], answer: ['2', '3', '5'] },
+    { question: 'What is 5 + 7?', type: 'fill', options: [], answer: ['12'] },
+    { question: 'Which planet is known as the Red Planet?', type: 'single', options: ['Mars', 'Jupiter', 'Saturn', 'Venus'], answer: ['Mars'] },
+    { question: 'Which languages are used for web development?', type: 'multi', options: ['HTML', 'Python', 'CSS', 'JavaScript'], answer: ['HTML', 'CSS', 'JavaScript'] },
+    { question: 'Who wrote "To Kill a Mockingbird"?', type: 'single', options: ['Harper Lee', 'J.K. Rowling', 'Jane Austen', 'Mark Twain'], answer: ['Harper Lee'] },
+    { question: 'Complete the phrase: "An apple a day keeps the ______ away."', type: 'fill', options: [], answer: ['doctor'] },
+    { question: 'Which ocean is the largest?', type: 'single', options: ['Atlantic', 'Indian', 'Arctic', 'Pacific'], answer: ['Pacific'] },
+    { question: 'Pick the even numbers:', type: 'multi', options: ['1', '2', '3', '4', '5'], answer: ['2', '4'] },
+    { question: 'What is the boiling point of water (in Celsius)?', type: 'fill', options: [], answer: ['100'] }
+];
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById("question").innerText = q.question;
+            const optionsDiv = document.getElementById("options");
+            optionsDiv.innerHTML = "";
+            document.getElementById("fillAnswer").style.display = "none";
+            document.getElementById("submitBtn").style.display = currentQuestion === questions.length - 1 ? "block" : "none";
+
+            if (q.type === "single" || q.type === "multi") {
+                q.options.forEach((option) => {
+                    const checkbox = document.createElement("input");
+                    checkbox.type = q.type === "single" ? "radio" : "checkbox";
+                    checkbox.name = "option";
+                    checkbox.value = option;
+                    if (answers[currentQuestion] && answers[currentQuestion].includes(option)) {
+                        checkbox.checked = true;
+                    }
+                    const label = document.createElement("label");
+                    label.innerText = option;
+                    label.prepend(checkbox);
+                    optionsDiv.appendChild(label);
+                });
+            } else if (q.type === "fill") {
+                document.getElementById("fillAnswer").style.display = "block";
+                document.getElementById("fillAnswer").value = answers[currentQuestion] || "";
+            }
+        }
+
+        function nextQuestion() {
+            collectAnswer();
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            collectAnswer();
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+
+        function collectAnswer() {
+            const q = questions[currentQuestion];
+            if (q.type === "fill") {
+                answers[currentQuestion] = document.getElementById("fillAnswer").value;
+            } else {
+                const checked = Array.from(document.querySelectorAll("input[name='option']:checked"));
+                answers[currentQuestion] = checked.map(opt => opt.value);
+            }
+        }
+
+        function submitQuiz() {
+            submitted = true;
+            document.getElementById("finalMessage").innerText = "Quiz Completed! Your final score: " + score + "/" + questions.length;
+            document.getElementById("submitBtn").innerText = "Submitted";
+            document.getElementById("submitBtn").disabled = true;
+            document.getElementById("prevBtn").disabled = true;
+            document.getElementById("nextBtn").disabled = true;
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
